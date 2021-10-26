@@ -36,7 +36,7 @@ def update(lst_obiecte, obiect_1):
     """
     Modifica un obiect
     :param lst_obiecte: lista de obiecte
-    :param obiect: cu id existent
+    :param obiect_1: cu id existent
     :return: lista de obiecte modificata
     """
     new_lst_obiecte = []
@@ -49,7 +49,7 @@ def update(lst_obiecte, obiect_1):
 
 
 def delete(lst_obiecte, id_obiect):
-    new_lst_obiecte=[]
+    new_lst_obiecte = []
     for obiect in lst_obiecte:
         if get_id(obiect) != id_obiect:
             new_lst_obiecte.append(obiect)
