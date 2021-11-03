@@ -1,5 +1,4 @@
 
-
 def creare_obiect(id_obiect, nume, descriere, pret_achizitie, locatie):
     """
     creeaza un obiect

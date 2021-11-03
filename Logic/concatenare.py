@@ -2,6 +2,13 @@ from Domain.Obiect import get_pret, get_descriere, creare_obiect, get_locatie, g
 
 
 def concatenare_string(lst_obiecte, string, val):
+    """
+    Concateneaza un string anume pentru obiectele cu pretul mai mare decat o valoare
+    :param lst_obiecte:
+    :param string:
+    :param val:
+    :return: lista noua modificata
+    """
     new_lst = []
     for obiect in lst_obiecte:
         if get_pret(obiect)>val:
