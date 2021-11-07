@@ -59,3 +59,4 @@ def console(obiecte):
                         print(get_str(obiect))
                 else:
                     print("optiune gresita")
+    return obiecte

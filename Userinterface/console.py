@@ -1,7 +1,10 @@
 from Domain.Obiect import get_str, creare_obiect
 from Logic.concatenare import concatenare_string
 from Logic.crud import create, delete, update, read
+from Logic.determinare_pret_per_locatie import determinare_pret_maxim_locatie
 from Logic.mutare import mutare_obiecte
+from Logic.ordonare_pret import ordonare_dupa_pret
+from Logic.sume_locatie import sume_pret_per_locatie
 
 
 def meniu():
@@ -13,6 +16,7 @@ def meniu():
     print("5. Ordonarea obiectelor crescător după prețul de achiziție.")
     print("6. Afișarea sumelor prețurilor pentru fiecare locație.")
     print("7. Undo.")
+    print("8. Redo.")
     print("x. Pentru a iesi din program")
 
 
@@ -67,6 +71,12 @@ def handle_show_all(obiecte):
         print(get_str(obiect))
 
 
+def handle_determinare(obiecte):
+    lst = determinare_pret_maxim_locatie(obiecte)
+    for locatie in lst:
+        print(f'{locatie}: {get_str(lst[locatie])} ')
+
+
 def handle_mutare(obiecte):
     try:
         locatie_initiala = input("Dati locatia din care sa se mute obiectele (4 caractere):")
@@ -77,7 +87,38 @@ def handle_mutare(obiecte):
     return obiecte
 
 
-def meniu_crud(obiecte):
+def handle_ordonare(obiecte):
+    ordonate = ordonare_dupa_pret(obiecte)
+    handle_show_all(ordonate)
+
+
+def handle_new_list(obiecte, list_v, current_v):
+    while current_v < len(list_v)-1:
+        list_v.pop()
+    list_v.append(obiecte)
+    current_v += 1
+    return list_v, current_v
+
+
+def undo(list_v, current_v):
+    if current_v == 0:
+        print("Nu se mai poate face undo")
+        return list_v[current_v], current_v
+    else:
+        current_v -= 1
+        return list_v[current_v], current_v
+
+
+def redo(list_v, current_v):
+    if current_v == len(list_v)-1:
+        print("Nu se mai poate face redo")
+        return list_v[current_v], current_v
+    else:
+        current_v += 1
+        return list_v[current_v], current_v
+
+
+def meniu_crud(obiecte, list_v, current_v):
     while True:
         print("1. Adaugare obiect")
         print("2. Detalii obiect")
@@ -88,19 +129,22 @@ def meniu_crud(obiecte):
         optiune = input("Alegeti optiunea dorita:")
         if optiune == '1':
             obiecte = handle_add(obiecte)
+            list_v, current_v = handle_new_list(obiecte, list_v, current_v)
         elif optiune == '2':
             print(handle_details(obiecte))
         elif optiune == '4':
             obiecte = handle_del(obiecte)
+            list_v, current_v = handle_new_list(obiecte, list_v, current_v)
         elif optiune == '3':
             obiecte = handle_up(obiecte)
+            list_v, current_v = handle_new_list(obiecte, list_v, current_v)
         elif optiune == 'a':
             handle_show_all(obiecte)
         elif optiune == 'b':
             break
         else:
             print("Optiune invalida")
-    return obiecte
+    return obiecte, list_v, current_v
 
 
 def handle_concatenare(obiecte):
@@ -113,16 +157,36 @@ def handle_concatenare(obiecte):
     return obiecte
 
 
+def handle_sum(obiecte):
+    lst = sume_pret_per_locatie(obiecte)
+    for locatie in lst:
+        print(f'{locatie} are suma preturilor {lst[locatie]}')
+
+
 def run_ui(obiecte):
+    list_v = [obiecte]
+    current_v = 0
     while True:
         meniu()
         optiune = input("Alegeti optiunea dorita:")
         if optiune == '1':
-            obiecte = meniu_crud(obiecte)
+            obiecte, list_v, current_v = meniu_crud(obiecte, list_v, current_v)
         elif optiune == '2':
             obiecte = handle_mutare(obiecte)
+            list_v, current_v = handle_new_list(obiecte, list_v, current_v)
         elif optiune == '3':
             obiecte = handle_concatenare(obiecte)
+            list_v, current_v = handle_new_list(obiecte, list_v, current_v)
+        elif optiune == '4':
+            handle_determinare(obiecte)
+        elif optiune == '5':
+            handle_ordonare(obiecte)
+        elif optiune == '6':
+            handle_sum(obiecte)
+        elif optiune == '7':
+            obiecte, current_v = undo(list_v, current_v)
+        elif optiune == '8':
+            obiecte, current_v = redo(list_v, current_v)
         else:
             break
     return obiecte
