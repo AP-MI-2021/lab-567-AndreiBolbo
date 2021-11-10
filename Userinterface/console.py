@@ -5,6 +5,7 @@ from Logic.determinare_pret_per_locatie import determinare_pret_maxim_locatie
 from Logic.mutare import mutare_obiecte
 from Logic.ordonare_pret import ordonare_dupa_pret
 from Logic.sume_locatie import sume_pret_per_locatie
+from Logic.undo_redo import do_undo, do_redo
 
 
 def meniu():
@@ -20,29 +21,30 @@ def meniu():
     print("x. Pentru a iesi din program")
 
 
-def handle_add(obiecte):
+def handle_add(obiecte, undo_list, redo_list):
     try:
         id_obiect = int(input("Dati id-ul:"))
         nume_obiect = input("Dati numele obiectului:")
         descriere_obiect = input("Dati descrierea obiectului:")
         pret_obiect = int(input("Dati pretul:"))
         locatie_obiect = input("Dati locatia obiectului ,exact 4 caractere:")
-        return create(obiecte, id_obiect, nume_obiect, descriere_obiect, pret_obiect, locatie_obiect)
+        return create(obiecte, id_obiect, nume_obiect, descriere_obiect, pret_obiect, locatie_obiect, undo_list,
+                      redo_list)
     except ValueError as ve:
         print('Eroare:', ve)
     return obiecte
 
 
-def handle_del(obiecte):
+def handle_del(obiecte, undo_list, redo_list):
     try:
         id_obiect = int(input("Dati id-ul elementului pe care vreti sa il stergeti:"))
-        return delete(obiecte, id_obiect)
+        return delete(obiecte, id_obiect, undo_list, redo_list)
     except ValueError as ve:
         print('Eroare:', ve)
     return obiecte
 
 
-def handle_up(obiecte):
+def handle_up(obiecte, undo_list, redo_list):
     try:
         id_obiect = int(input("Dati id-ul obiectului pe care vreti sa il modificati:"))
         nume_obiect = input("Dati numele obiectului:")
@@ -50,7 +52,7 @@ def handle_up(obiecte):
         pret_obiect = int(input("Dati pretul:"))
         locatie_obiect = input("Dati locatia obiectului ,exact 4 caractere:")
         obiect = creare_obiect(id_obiect, nume_obiect, descriere_obiect, pret_obiect, locatie_obiect)
-        return update(obiecte, obiect)
+        return update(obiecte, obiect, undo_list, redo_list)
     except ValueError as ve:
         print("Eroare:", ve)
     return obiecte
@@ -77,48 +79,23 @@ def handle_determinare(obiecte):
         print(f'{locatie}: {get_str(lst[locatie])} ')
 
 
-def handle_mutare(obiecte):
+def handle_mutare(obiecte, undo_list, redo_list):
     try:
         locatie_initiala = input("Dati locatia din care sa se mute obiectele (4 caractere):")
         locatie_noua = input("Dati locatia in care sa se mute obiectele (4 caractere):")
-        obiecte = mutare_obiecte(obiecte, locatie_initiala, locatie_noua)
+        obiecte = mutare_obiecte(obiecte, locatie_initiala, locatie_noua, undo_list, redo_list)
     except ValueError as ve:
         print("Eroare:", ve)
     return obiecte
 
 
-def handle_ordonare(obiecte):
-    ordonate = ordonare_dupa_pret(obiecte)
+def handle_ordonare(obiecte, undo_list, redo_list):
+    ordonate = ordonare_dupa_pret(obiecte, undo_list, redo_list)
     handle_show_all(ordonate)
+    return ordonate
 
 
-def handle_new_list(obiecte, list_v, current_v):
-    while current_v < len(list_v)-1:
-        list_v.pop()
-    list_v.append(obiecte)
-    current_v += 1
-    return list_v, current_v
-
-
-def undo(list_v, current_v):
-    if current_v == 0:
-        print("Nu se mai poate face undo")
-        return list_v[current_v], current_v
-    else:
-        current_v -= 1
-        return list_v[current_v], current_v
-
-
-def redo(list_v, current_v):
-    if current_v == len(list_v)-1:
-        print("Nu se mai poate face redo")
-        return list_v[current_v], current_v
-    else:
-        current_v += 1
-        return list_v[current_v], current_v
-
-
-def meniu_crud(obiecte, list_v, current_v):
+def meniu_crud(obiecte,  undo_list, redo_list):
     while True:
         print("1. Adaugare obiect")
         print("2. Detalii obiect")
@@ -128,30 +105,27 @@ def meniu_crud(obiecte, list_v, current_v):
         print("b. Revenire")
         optiune = input("Alegeti optiunea dorita:")
         if optiune == '1':
-            obiecte = handle_add(obiecte)
-            list_v, current_v = handle_new_list(obiecte, list_v, current_v)
+            obiecte = handle_add(obiecte, undo_list, redo_list)
         elif optiune == '2':
             print(handle_details(obiecte))
         elif optiune == '4':
-            obiecte = handle_del(obiecte)
-            list_v, current_v = handle_new_list(obiecte, list_v, current_v)
+            obiecte = handle_del(obiecte, undo_list, redo_list)
         elif optiune == '3':
-            obiecte = handle_up(obiecte)
-            list_v, current_v = handle_new_list(obiecte, list_v, current_v)
+            obiecte = handle_up(obiecte,  undo_list, redo_list)
         elif optiune == 'a':
             handle_show_all(obiecte)
         elif optiune == 'b':
             break
         else:
             print("Optiune invalida")
-    return obiecte, list_v, current_v
+    return obiecte
 
 
-def handle_concatenare(obiecte):
+def handle_concatenare(obiecte, undo_list, redo_list):
     try:
         string = input("Dati string-ul de adaugat la descriere:")
         val = int(input("Dati valoarea de comparat cu pretul obiectelor:"))
-        obiecte = concatenare_string(obiecte, string, val)
+        obiecte = concatenare_string(obiecte, string, val,  undo_list, redo_list)
     except ValueError as ve:
         print("Eroare:", ve)
     return obiecte
@@ -163,30 +137,42 @@ def handle_sum(obiecte):
         print(f'{locatie} are suma preturilor {lst[locatie]}')
 
 
-def run_ui(obiecte):
-    list_v = [obiecte]
-    current_v = 0
+def handle_undo(obiecte, undo_list, redo_list):
+    undo_result = do_undo(undo_list, redo_list, obiecte)
+    if undo_result:
+        return undo_result
+    return obiecte
+
+
+def handle_redo(obiecte, undo_list, redo_list):
+    redo_result = do_redo(undo_list, redo_list, obiecte)
+    if redo_result:
+        return redo_result
+    return obiecte
+
+
+def run_ui(obiecte, undo_list, redo_list):
     while True:
         meniu()
         optiune = input("Alegeti optiunea dorita:")
         if optiune == '1':
-            obiecte, list_v, current_v = meniu_crud(obiecte, list_v, current_v)
+            obiecte = meniu_crud(obiecte, undo_list, redo_list)
         elif optiune == '2':
-            obiecte = handle_mutare(obiecte)
-            list_v, current_v = handle_new_list(obiecte, list_v, current_v)
+            obiecte = handle_mutare(obiecte, undo_list, redo_list)
+
         elif optiune == '3':
-            obiecte = handle_concatenare(obiecte)
-            list_v, current_v = handle_new_list(obiecte, list_v, current_v)
+            obiecte = handle_concatenare(obiecte, undo_list, redo_list)
+
         elif optiune == '4':
             handle_determinare(obiecte)
         elif optiune == '5':
-            handle_ordonare(obiecte)
+            obiecte = handle_ordonare(obiecte, undo_list, redo_list)
         elif optiune == '6':
             handle_sum(obiecte)
         elif optiune == '7':
-            obiecte, current_v = undo(list_v, current_v)
+            obiecte = handle_undo(obiecte, undo_list, redo_list)
         elif optiune == '8':
-            obiecte, current_v = redo(list_v, current_v)
+            obiecte = handle_redo(obiecte, undo_list, redo_list)
         else:
             break
     return obiecte

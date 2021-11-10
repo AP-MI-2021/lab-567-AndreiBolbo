@@ -1,9 +1,11 @@
 from Domain.Obiect import get_locatie, creare_obiect, get_id, get_nume, get_descriere, get_pret
 
 
-def mutare_obiecte(lst_obiecte, locatie_initiala, locatie_noua):
+def mutare_obiecte(lst_obiecte, locatie_initiala, locatie_noua, undo_list, redo_list):
     """
     Muta obiectele din locatia initiala in locatia noua
+    :param redo_list:
+    :param undo_list:
     :param lst_obiecte:
     :param locatie_initiala:
     :param locatie_noua:
@@ -19,4 +21,6 @@ def mutare_obiecte(lst_obiecte, locatie_initiala, locatie_noua):
             new_lst.append(new_obiect)
         else:
             new_lst.append(obiect)
+    undo_list.append(lst_obiecte)
+    redo_list.clear()
     return new_lst

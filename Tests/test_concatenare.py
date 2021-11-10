@@ -16,6 +16,6 @@ def test_concatenare():
     obiecte = get_data()
     string = 'sd'
     val = 100
-    lst = concatenare_string(obiecte, string, val)
+    lst = concatenare_string(obiecte, string, val, [], [])
     assert get_descriere(obiecte[0]) != get_descriere(lst[0])
     assert get_descriere(obiecte[2]) != get_descriere(lst[2])

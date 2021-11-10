@@ -16,7 +16,7 @@ def test_create():
     obiecte = get_data()
     params = (6, 'dulap', 'desc6', 35, 'e554')
     new_obiect = creare_obiect(*params)
-    lst = create(obiecte, *params)
+    lst = create(obiecte, *params, [], [])
     assert new_obiect in lst
 
 
@@ -30,7 +30,7 @@ def test_update():
     obiecte = get_data()
     params = (5, 'dulap', 'desc6', 35, 'e554')
     up_obiect = creare_obiect(*params)
-    lst = update(obiecte, up_obiect)
+    lst = update(obiecte, up_obiect, [], [])
     assert up_obiect not in obiecte
     assert up_obiect in lst
     assert len(lst) == len(obiecte)
@@ -40,7 +40,7 @@ def test_delete():
     obiecte = get_data()
     de = 2
     obiect_del = read(obiecte, de)
-    lst = delete(obiecte, de)
+    lst = delete(obiecte, de, [], [])
     assert len(lst)+1 == len(obiecte)
     assert obiect_del not in lst
     assert obiect_del in obiecte

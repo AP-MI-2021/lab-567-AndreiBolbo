@@ -1,4 +1,4 @@
-from Domain.Obiect import get_descriere, creare_obiect, get_locatie
+from Domain.Obiect import creare_obiect, get_locatie
 from Logic.mutare import mutare_obiecte
 
 
@@ -16,11 +16,11 @@ def tester():
     obiecte = get_data()
     locatie_initiala = 'd314'
     locatie_noua = 'l321'
-    lst = mutare_obiecte(obiecte, locatie_initiala, locatie_noua)
+    lst = mutare_obiecte(obiecte, locatie_initiala, locatie_noua, [], [])
     assert get_locatie(obiecte[0]) != get_locatie(lst[0])
     locatie_initiala = 'l321'
     locatie_noua = 'd314'
-    lst = mutare_obiecte(obiecte, locatie_initiala, locatie_noua)
+    lst = mutare_obiecte(obiecte, locatie_initiala, locatie_noua, [], [])
     assert get_locatie(obiecte[0]) == get_locatie(lst[0])
 
 

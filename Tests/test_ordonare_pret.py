@@ -14,7 +14,7 @@ def get_data():
 
 def test_ord():
     obiecte = get_data()
-    lst = ordonare_dupa_pret(obiecte)
+    lst = ordonare_dupa_pret(obiecte, [], [])
     assert lst[0] == obiecte[1]
     assert lst[0] != obiecte[0]
     
